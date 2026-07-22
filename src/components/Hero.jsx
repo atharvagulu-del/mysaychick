@@ -11,7 +11,7 @@ function Hero() {
             >
                 <div className="bg-white dark:bg-[#0B0B0B] border-5 border-black dark:border-white shadow-brutal dark:shadow-brutal-light p-8 md:p-12">
                     <motion.h1
-                        className="text-5xl md:text-7xl font-space font-bold mb-6 leading-tight"
+                        className="text-5xl md:text-7xl font-space font-bold mb-6 leading-tight text-black dark:text-white"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3, duration: 0.6 }}
@@ -29,7 +29,7 @@ function Hero() {
                     </motion.p>
 
                     <motion.p
-                        className="text-xl md:text-2xl font-inter leading-relaxed"
+                        className="text-xl md:text-2xl font-inter leading-relaxed text-black dark:text-white"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.6, duration: 0.6 }}

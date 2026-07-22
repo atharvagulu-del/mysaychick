@@ -115,9 +115,10 @@ function OneYear() {
                             key={index}
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
+                            whileHover={{ x: 10, scale: 1.02 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.15, duration: 0.5 }}
-                            className="bg-white dark:bg-[#0B0B0B] border-4 border-black dark:border-white shadow-brutal-sm dark:shadow-brutal-light-sm p-6 md:p-8"
+                            className="bg-white dark:bg-[#0B0B0B] border-4 border-black dark:border-white shadow-brutal-sm dark:shadow-brutal-light-sm p-6 md:p-8 hover:shadow-brutal-lg dark:hover:shadow-brutal-light-lg transition-shadow"
                         >
                             <h3 className="text-2xl md:text-3xl font-space font-bold mb-2 text-black dark:text-white">
                                 {item.label}

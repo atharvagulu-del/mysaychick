@@ -16,9 +16,10 @@ function Letter() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
+                    whileHover={{ scale: 1.01, rotate: -0.5, boxShadow: '12px 12px 0px 0px rgba(0, 0, 0, 1)' }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="bg-white dark:bg-gray-900 border-5 border-black dark:border-white shadow-brutal-lg p-8 md:p-12"
+                    className="bg-white dark:bg-gray-900 border-5 border-black dark:border-white shadow-brutal-lg p-8 md:p-12 transition-shadow"
                 >
                     <h2 className="text-4xl md:text-5xl font-space font-bold mb-8 border-b-4 border-black dark:border-white pb-4 dark:text-white">
                         A letter from me

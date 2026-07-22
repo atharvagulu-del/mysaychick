@@ -2,128 +2,100 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 
 function Memories() {
-    const [currentIndex, setCurrentIndex] = useState(0)
-    const [showCaption, setShowCaption] = useState(false)
-
-    const memories = [
+    const initialMemories = [
         {
+            id: 1,
             image: '/memories/anya-cool.png',
             caption: 'You being effortlessly you.'
         },
         {
+            id: 2,
             image: '/memories/anya-calm.png',
             caption: 'This one feels quiet. I like that.'
         },
         {
+            id: 3,
             image: '/memories/anya-goofy.png',
             caption: 'You being you. I love youuuuuu.'
         }
     ]
 
-    const handleNext = () => {
-        setShowCaption(false)
-        setCurrentIndex((prev) => (prev + 1) % memories.length)
-    }
+    const [memories, setMemories] = useState(initialMemories)
 
-    const handlePrev = () => {
-        setShowCaption(false)
-        setCurrentIndex((prev) => (prev - 1 + memories.length) % memories.length)
-    }
-
-    const handleImageClick = () => {
-        setShowCaption(!showCaption)
+    const handleDragEnd = (event, info, id) => {
+        const threshold = 100
+        if (Math.abs(info.offset.x) > threshold || Math.abs(info.offset.y) > threshold) {
+            setMemories(prev => {
+                const newMemories = [...prev]
+                const draggedItem = newMemories.shift()
+                newMemories.push(draggedItem)
+                return newMemories
+            })
+        }
     }
 
     return (
-        <section className="min-h-screen flex items-center justify-center px-4 py-16 md:py-24">
-            <div className="max-w-3xl w-full">
+        <section className="min-h-screen flex items-center justify-center px-4 py-16 md:py-24 overflow-hidden relative">
+            <div className="max-w-3xl w-full flex flex-col items-center">
                 <motion.h2
                     initial={{ opacity: 0, y: -20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="text-4xl md:text-6xl font-space font-bold mb-12 text-center text-black dark:text-white"
+                    className="text-4xl md:text-6xl font-space font-bold mb-16 text-center text-black dark:text-white"
                 >
                     Moments I Keep
                 </motion.h2>
 
-                <div className="relative">
-                    {/* Image Container */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="bg-white dark:bg-[#0B0B0B] border-5 border-black dark:border-white shadow-brutal-lg dark:shadow-brutal-light-lg overflow-hidden"
-                    >
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={currentIndex}
-                                initial={{ x: 100, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                exit={{ x: -100, opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                                onClick={handleImageClick}
-                                className="cursor-pointer"
-                            >
-                                <img
-                                    src={memories[currentIndex].image}
-                                    alt={`Memory ${currentIndex + 1}`}
-                                    className="w-full h-auto object-cover"
-                                    style={{ maxHeight: '70vh' }}
-                                />
-                            </motion.div>
-                        </AnimatePresence>
-
-                        {/* Caption Overlay */}
-                        <AnimatePresence>
-                            {showCaption && (
+                <div className="relative w-full max-w-sm md:max-w-md h-[55vh] flex items-center justify-center perspective-[1000px]">
+                    <AnimatePresence>
+                        {memories.map((memory, index) => {
+                            const isTop = index === 0;
+                            const rotateOffset = (memory.id % 2 === 0 ? 1 : -1) * (memory.id * 3);
+                            
+                            return (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 20 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="absolute bottom-0 left-0 right-0 bg-black dark:bg-white border-t-4 border-black dark:border-white p-6 md:p-8"
+                                    key={memory.id}
+                                    layout
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ 
+                                        scale: 1 - index * 0.05,
+                                        y: index * 12,
+                                        opacity: 1 - (index * 0.15),
+                                        rotate: isTop ? 0 : rotateOffset,
+                                        zIndex: memories.length - index
+                                    }}
+                                    exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+                                    drag={isTop}
+                                    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                                    dragElastic={1}
+                                    onDragEnd={(e, info) => isTop && handleDragEnd(e, info, memory.id)}
+                                    whileTap={isTop ? { scale: 1.05, cursor: "grabbing" } : {}}
+                                    className={`absolute bg-white dark:bg-[#0B0B0B] border-4 border-black dark:border-white shadow-brutal-lg dark:shadow-brutal-light-lg p-4 flex flex-col cursor-grab`}
+                                    style={{ width: '100%' }}
                                 >
-                                    <p className="text-xl md:text-2xl font-space font-bold text-white dark:text-black text-center">
-                                        {memories[currentIndex].caption}
-                                    </p>
+                                    <div className="relative overflow-hidden border-2 border-black dark:border-gray-700 bg-gray-100 dark:bg-gray-800 flex items-center justify-center min-h-[300px]">
+                                        <img
+                                            src={memory.image}
+                                            alt="Memory"
+                                            className="w-full h-auto object-cover pointer-events-none"
+                                            style={{ maxHeight: '40vh' }}
+                                        />
+                                    </div>
+                                    <div className="mt-4 text-center pb-2 bg-white dark:bg-[#0B0B0B]">
+                                        <p className="text-xl md:text-2xl font-space font-bold text-black dark:text-white">
+                                            {memory.caption}
+                                        </p>
+                                    </div>
                                 </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
-
-                    {/* Navigation Buttons */}
-                    <div className="flex justify-between items-center mt-6 gap-4">
-                        <button
-                            onClick={handlePrev}
-                            className="bg-white dark:bg-[#0B0B0B] border-4 border-black dark:border-white shadow-brutal dark:shadow-brutal-light px-6 py-3 font-space font-bold text-xl text-black dark:text-white hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal-lg dark:hover:shadow-brutal-light-lg transition-transform"
-                        >
-                            ← PREV
-                        </button>
-
-                        <div className="flex gap-2">
-                            {memories.map((_, index) => (
-                                <div
-                                    key={index}
-                                    className={`w-4 h-4 border-3 border-black dark:border-white ${index === currentIndex ? 'bg-black dark:bg-white' : 'bg-white dark:bg-[#0B0B0B]'
-                                        }`}
-                                />
-                            ))}
-                        </div>
-
-                        <button
-                            onClick={handleNext}
-                            className="bg-white dark:bg-[#0B0B0B] border-4 border-black dark:border-white shadow-brutal dark:shadow-brutal-light px-6 py-3 font-space font-bold text-xl text-black dark:text-white hover:translate-x-[2px] hover:translate-y-[-2px] hover:shadow-brutal-lg dark:hover:shadow-brutal-light-lg transition-transform"
-                        >
-                            NEXT →
-                        </button>
-                    </div>
-
-                    <p className="text-center text-lg font-inter mt-6 text-gray-600 dark:text-gray-400">
-                        (Tap the image to see the caption)
-                    </p>
+                            )
+                        })}
+                    </AnimatePresence>
                 </div>
+                
+                <p className="text-center text-lg font-inter mt-16 text-gray-600 dark:text-gray-400 font-bold tracking-wider uppercase">
+                    (Drag photo to reveal the next)
+                </p>
             </div>
         </section>
     )
